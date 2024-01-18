@@ -1,15 +1,20 @@
+# Define variables
 CXX = c++
-CFLAGS = -c
+CFLAGS = --std=c++11
 LINKER = -o
-CXXSOURCE = cmdline.cpp main.cpp
-HEADERS = cmdline.hpp
+CXXSOURCE = cmdline.cpp Expr.cpp main.cpp Tests.cpp
+HEADERS = cmdline.hpp Expr.hpp catch.h
+OBJFILES = cmdline.o main.o Expr.o Tests.o
 
 all: msdscript
 
-#this will compile the changed files
-msdscript: $(CXXSOURCE) $(HEADERS)
-	$(CXX) $(CFLAGS) $(CXXSOURCE)
-	$(CXX) cmdline.o main.o $(LINKER) msdscript
+# Generate object files for source files
+%.o: %.cpp $(HEADERS)
+	$(CXX) $(CFLAGS) -c -o $@ $<
+
+# Link the object files to create the executable
+msdscript: $(OBJFILES)
+	$(CXX) $(CFLAGS) $(LINKER) $@ $^
 
 # Defines a target for cleaning up the project
 .PHONY: clean
@@ -17,4 +22,4 @@ msdscript: $(CXXSOURCE) $(HEADERS)
 # 'make clean' will remove the executable and the .o files
 clean:
 	rm -rf *.o
-	rm msdscript
+	rm -f msdscript
