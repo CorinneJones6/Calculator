@@ -23,3 +23,11 @@ msdscript: $(OBJFILES)
 clean:
 	rm -rf *.o
 	rm -f msdscript
+	
+# 'make run' will run the executable
+run: msdscript
+	./msdscript
+
+# 'make run test' will run the executable w/ the test tag
+run test: msdscript
+	./msdscript --test
