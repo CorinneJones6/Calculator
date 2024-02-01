@@ -1,8 +1,6 @@
 name: MSD
-
 on:
-  push:
-    
+  push:    
 jobs:
   build:
     runs-on: macos-latest
