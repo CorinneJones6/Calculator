@@ -1,12 +1,18 @@
-//
-//  Expr.hpp
-//  ExpressionClasses
-//
-//  Created by Corinne Jones on 1/16/24.
-//
+/**
+ * \file Expr.hpp
+ * \brief Declaration of expression classes for arithmetic operations.
+ *
+ * Defines the abstract base class Expr and its derived classes such as Add, Mult, Num, and Var.
+ * These classes are used to construct and evaluate arithmetic expressions involving basic operations
+ * and variables. Includes functionality for equality checking, evaluation, variable substitution,
+ * and pretty printing of expressions.
+ *
+ * \author Corinne Jones
+ * \date 1/16/24
+ */
 #pragma once
 
-#include<stdlib.h>
+#include <stdlib.h>
 #include <stdio.h>
 #include <string>
 #include <stdexcept>
@@ -99,8 +105,6 @@ public:
     virtual Expr* subst(string str, Expr* e);
     
     virtual void print (ostream &ostream);
-    
-    string to_string();
     
 };
 
