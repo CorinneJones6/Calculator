@@ -35,7 +35,7 @@ public:
     virtual void print(ostream &ostream)=0;
     
     string to_string();
-    virtual void pretty_print_at(ostream &ostream, precedence_t prec);
+    virtual void pretty_print_at(ostream &ostream, precedence_t prec, bool let_parent, streampos strmpos);
     void pretty_print(ostream &ostream);
     string to_pretty_string();
     
@@ -61,7 +61,7 @@ public:
     
     virtual void print(ostream &ostream);
     
-    void pretty_print_at(ostream &ostream, precedence_t prec);
+    void pretty_print_at(ostream &ostream, precedence_t prec, bool let_parent, streampos strmpos);
     
 };
 
@@ -84,7 +84,7 @@ public:
     
     virtual void print (ostream &ostream);
     
-    void pretty_print_at(std::ostream &ostream, precedence_t prec);
+    void pretty_print_at(ostream &ostream, precedence_t prec, bool let_parent, streampos strmpos);
     
 };
 
@@ -124,6 +124,31 @@ public:
     virtual Expr* subst(string str, Expr* e);
     
     virtual void print (ostream &ostream);
+    
+};
+
+//======================  LET  ======================//
+
+class Let : public Expr {
+    
+public:
+    string lhs;
+    Expr* rhs;
+    Expr* body;
+    
+    Let(string lhs, Expr* rhs, Expr* body);
+
+    virtual bool equals(Expr* e);
+    
+    virtual int interp();
+    
+    virtual bool has_variable();
+    
+    virtual Expr* subst(string str, Expr* e);
+    
+    virtual void print(ostream &ostream);
+    
+    void pretty_print_at(ostream &ostream, precedence_t prec, bool let_parent, streampos strmpos);
     
 };
 
