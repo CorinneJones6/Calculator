@@ -44,7 +44,7 @@ Expr* parse_expr(istream &in) {
     if (c == '+') {
         consume(in, '+');
         Expr *rhs = parse_expr(in);
-        return new Add(e, rhs);
+        return new AddExpr(e, rhs);
     }
     else{
         return  e;
@@ -68,7 +68,7 @@ Expr* parse_addend(istream &in) {
         consume(in, '*');
         skip_whitespace(in) ;
         Expr *rhs = parse_addend(in);
-        return new Mult(e, rhs);
+        return new MultExpr(e, rhs);
     }
     else{
         return e ;
@@ -82,7 +82,6 @@ Expr* parse_addend(istream &in) {
  * \return Pointer to the parsed expression object.
  */
 Expr* parse_multicand(istream &in) {
-    
     skip_whitespace(in);
     int c = in.peek();
     
@@ -144,8 +143,7 @@ Expr* parse_num(istream &in) {
 
     if (negative)
         n = n * -1;
-
-    return new Num(n);
+    return new NumExpr(n);
 }
 
 /**
@@ -206,9 +204,20 @@ Expr* parse_var(istream &in) {
             break;
         }
     }
-    return new Var(str);
+    return new VarExpr(str);
 }
 
+/**
+ * \brief Consumes a specified string from the input stream.
+ *
+ * This function reads characters from the input stream until it matches
+ * the characters in the given string, throwing a runtime_error if a
+ * mismatch is encountered.
+ *
+ * \param in The input stream to consume characters from.
+ * \param str The string to be consumed from the input stream.
+ * \throws runtime_error If a character mismatch occurs during consumption.
+ */
 static void consume_word(istream &in, string str){
     for(char c : str){
         if (in.get()!=c){
@@ -217,6 +226,15 @@ static void consume_word(istream &in, string str){
     }
 }
 
+/**
+ * \brief Parses a _let expression from the input stream.
+ *
+ * This function parses a _let expression from the input stream, constructing
+ * a Let object with the parsed components.
+ *
+ * \param in The input stream to parse from.
+ * \return A pointer to the Let expression object.
+ */
 Expr* parse_let(istream &in){
     
     skip_whitespace(in);
@@ -245,7 +263,7 @@ Expr* parse_let(istream &in){
     
     Expr *body = parse_expr(in);
     
-    return new Let(lhs, rhs, body);
+    return new LetExpr(lhs, rhs, body);
 }
 
 
