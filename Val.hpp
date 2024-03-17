@@ -9,6 +9,7 @@
 
 #include <stdio.h>
 #include <string>
+#include "Expr.hpp"
 
 using namespace std;
 class Expr;
@@ -20,6 +21,7 @@ public:
     virtual Val* add_to(Val* other_val)=0;
     virtual Val* mult_with(Val* other_val)=0;
     virtual void print(ostream &ostream)=0;
+    virtual bool is_true()=0;
     
     string to_string();
 };
@@ -27,7 +29,6 @@ public:
 class NumVal : public Val {
 public:
     int val;
-    
     NumVal(int i);
     
     virtual Expr* to_expr();
@@ -35,7 +36,20 @@ public:
     virtual Val* add_to(Val* other_val);
     virtual Val* mult_with(Val* other_val);
     virtual void print(ostream &ostream);
+    virtual bool is_true();
     
 };
 
-
+class BoolVal : public Val {
+public:
+    bool val;
+    BoolVal(bool b);
+    
+    virtual Expr* to_expr();
+    virtual bool equals (Val *v);
+    virtual Val* add_to(Val* other_val);
+    virtual Val* mult_with(Val* other_val);
+    virtual void print(ostream &ostream);
+    virtual bool is_true();
+    
+};

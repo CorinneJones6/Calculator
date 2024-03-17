@@ -10,7 +10,11 @@ Expr *parse(istream &in);
 
 Expr *parse_expr(istream &in);
 
+Expr *parse_comparg(istream &in);
+
 Expr *parse_addend(istream &in);
+
+static string parse_term(istream &in);
 
 Expr *parse_multicand(istream &in);
 
@@ -27,5 +31,7 @@ Expr *parse_var(istream &in);
 static void consume_word(istream &in, string str);
 
 Expr *parse_let(istream &in);
+
+Expr* parse_if(istream &in);
 
 

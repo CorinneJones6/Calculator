@@ -28,27 +28,39 @@ Expr* parse(istream &in) {
     return e;
 }
 
+Expr *parse_expr(istream &in){
+    Expr* e = parse_comparg(in);
+    skip_whitespace(in);
+    if(in.peek() == '='){
+        consume(in, '=');
+        if(in.peek() != '='){
+            throw runtime_error("need '==' to indicate equal check") ;
+        }
+        consume(in, '=');
+        Expr* rhs = parse_expr(in);
+        return new EqExpr(e, rhs);
+    }
+    return e;
+}
+
 /**
  * Parses general expressions that can include addition from an input stream.
  *
  * \param in Reference to input stream from which the expression is read.
  * \return Pointer to the parsed expression object.
  */
-Expr* parse_expr(istream &in) {
+Expr* parse_comparg(istream &in) {
     
     Expr *e = parse_addend(in);
 
     skip_whitespace(in);
 
-    int c = in.peek();
-    if (c == '+') {
+    if (in.peek() == '+') {
         consume(in, '+');
-        Expr *rhs = parse_expr(in);
+        Expr *rhs = parse_comparg(in);
         return new AddExpr(e, rhs);
     }
-    else{
-        return  e;
-    }
+    return e;
 }
 
 /**
@@ -75,6 +87,21 @@ Expr* parse_addend(istream &in) {
     }
 }
 
+static string parse_term(istream &in){
+    string term;
+    while (true) {
+         int letter = in.peek();
+         if (isalpha(letter)) {
+             consume(in, letter);
+             char c = letter;
+             term += c;
+         }
+         else
+             break;
+     }
+    return term;
+}
+
 /**
  * Parses expressions with multiplication and division candidates from an input stream.
  *
@@ -88,9 +115,10 @@ Expr* parse_multicand(istream &in) {
     if ((c == '-') || isdigit(c)){
         return parse_num(in);
     }
+    
     else if (c == '(') {
         consume(in, '(');
-        Expr *e = parse_expr(in);
+        Expr *e = parse_comparg(in);
         skip_whitespace(in);
         c = in.get();
         if (c != ')'){
@@ -98,11 +126,31 @@ Expr* parse_multicand(istream &in) {
         }
         return e;
     }
+    
     else if (isalpha(c)) {
         return parse_var(in);
     }
+    
     else if (c=='_'){
-        return parse_let(in);
+        consume(in, '_');
+    
+        string term = parse_term(in);
+     
+        if(term == "let"){
+            return parse_let(in);
+        }
+        else if(term == "if"){
+            return parse_if(in);
+        }
+        else if(term == "true"){
+            return new BoolExpr(true);
+        }
+        else if(term == "false"){
+            return new BoolExpr(false);
+        }
+        else{
+            throw runtime_error("invalid input");
+        }
     }
     else {
         consume(in, c);
@@ -184,7 +232,7 @@ Expr* parse_input(){
     getline( cin, input);
     cout << "input: " << input << endl;
     stringstream ss(input);
-    return parse_expr(ss);
+    return parse_comparg(ss);
 }
 
 /**
@@ -239,10 +287,6 @@ Expr* parse_let(istream &in){
     
     skip_whitespace(in);
     
-    consume_word(in, "_let"); //consume "_let"
-    
-    skip_whitespace(in);
-    
     Expr *e = parse_var(in);
     
     string lhs = e->to_string();
@@ -253,17 +297,41 @@ Expr* parse_let(istream &in){
     
     skip_whitespace(in);
     
-    Expr *rhs = parse_expr(in);
+    Expr *rhs = parse_comparg(in);
     
     skip_whitespace(in);
     
-    consume_word(in, "_in"); //consume "_in"
+    consume_word(in, "_in");
     
     skip_whitespace(in);
     
-    Expr *body = parse_expr(in);
+    Expr *body = parse_comparg(in);
     
     return new LetExpr(lhs, rhs, body);
+}
+
+Expr* parse_if(istream &in){
+    skip_whitespace(in);
+    
+    Expr* ifStatement = parse_expr(in);
+    
+    skip_whitespace(in);
+    
+    consume_word(in, "_then");
+    
+    skip_whitespace(in);
+    
+    Expr* thenStatement = parse_expr(in);
+    
+    skip_whitespace(in);
+    
+    consume_word(in, "_else");
+    
+    skip_whitespace(in);
+    
+    Expr* elseStatment = parse_expr(in);
+    
+    return new IfExpr(ifStatement, thenStatement, elseStatment);
 }
 
 
