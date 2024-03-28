@@ -13,6 +13,7 @@
 #include <cstdlib>
 
 int main(int argc, char **argv) {
+
     try{
         run_mode_t type = use_arguments(argc, argv);
         
@@ -20,19 +21,19 @@ int main(int argc, char **argv) {
             case do_nothing:
                 break;
             case do_interp: {
-                Expr *e = parse(cin);
-                Val* i = e->interp();
-                cout << i << "\n";
+                PTR(Expr) e = parse(cin);
+                PTR(Val) i = e->interp();
+                cout << i->to_string() << "\n";
                 break;
             }
             case do_print: {
-                Expr *e = parse(cin);
+                PTR(Expr) e = parse(cin);
                 string str = e->to_string();
                 cout << str << "\n";
                 break;
             }
             case do_pretty_print: {
-                Expr *e = parse(cin);
+                PTR(Expr) e = parse(cin);
                 string str = e->to_pretty_string();
                 cout << str << "\n";
                 break;
